@@ -1,0 +1,9 @@
+apiVersion: v2
+name: rails
+version: 0.0.1
+appVersion: "1.0.0"
+description: A Helm chart for deploying A Rails Application
+icon: https://selisegroup.com/wp-content/uploads/2022/10/logo.png
+maintainers:
+  - name: Tek Nath Acharya
+home: https://github.com/selisebt/helm

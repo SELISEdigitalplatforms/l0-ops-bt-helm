@@ -1,0 +1,191 @@
+# Name to override for the chart name.
+fullNameOverride: ""
+# Specify the namespace where all the resources will be created
+namespace: default
+# container registry secret name to pull images from private registry
+# Chat expects secret named regcred by default
+imagePullSecrets:
+  - name: regcred
+# Which image to pull for the deployment.
+# pullPolicy specifies the image pull policy of Always or IfNotPresent
+image:
+  repository: selisebt/rails
+  tag: v0
+  pullPolicy: Always
+# If a config map is to be created for this chart.
+#The config map will be created and referenced as env in the pods
+# Add keys and values as shown in example below
+configMap:
+  enabled: false
+  keys:
+    RAILS_ENV: production
+    ROLLBAR_ENV: staging
+# Extra ENVs for the chart.
+# Example
+#extraEnvs:
+#  DATABASE_NAME: hello
+extraEnvs: {}
+# Extra Secret and Config map name
+# Refer example below
+extraConfigMaps: []
+extraSecrets: []
+#extraConfigMaps:
+#  - CongiName2
+#  - CongiName1
+#extraSecrets:
+#  - secretName1
+#  - secretName2
+# PVC volume to mount at a given path
+# Currently it supports persistentVolumeClaim, nfs and configMap claims
+# Each can be added as shown in the example
+volumeMounts:
+#  - name: pvc-name
+#    mountPoint: /path/to/mount/at
+#    type: persistentVolumeClaim
+#  - name: hello-world
+#    mountPoint: /test/kmm
+#    type: nfs
+#    server: 192.168.0.2
+#    path: /var/nfs/
+#  - name: config-maps
+#    type: configMap
+#    configName: my-config-map
+
+# The application configurations
+app:
+  puma:
+    name: puma
+    # Enable to disable the mentioned application
+    enabled: true
+    # Number of replicas
+    replicas: 1
+    # Puma service configuration
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 3000
+    # Resource configuration request
+    resourceRequest:
+      enabled: false
+      memory: 10Mi
+      cpu: 10m
+    # Resource configuration limits
+    resourceLimit:
+      enabled: false
+      memory: 100Mi
+      cpu: 100m
+    # livenessProbe to check Liveness of the application
+    # Ths supports liveness using exec or http or tcp methods
+    # Check examples below
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      # enable or disable livenessProbe
+      enabled: false
+      # type: exec Example
+#      type: exec
+#      command: ["pgrep", "-f", "sneakers"]
+      # type: http Example
+#      type: http
+#      httpGet:
+#        path: /healthz
+#        port: 8080
+#        httpHeaders:
+#          - name: hello
+#            value: world
+#          - name: helm
+#            value: charts
+      #type: tcp  Example
+#      type: tcp
+#      port: 8080
+    # readinessProbe to check Liveness of the application
+    # Ths supports readiness using exec or http or tcp methods
+    # Check actual doc for more information
+    # For examples refer livenessProbe above
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      # For examples check livenessProbe examples
+  sneakers:
+    enabled: false
+    replicas: 1
+    resourceRequest:
+      enabled: false
+      memory: 10Mi
+      cpu: 10m
+    resourceLimit:
+      enabled: false
+      memory: 100Mi
+      cpu: 100m
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "sneakers"]
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "sneakers"]
+  sidekiq:
+    enabled: flase
+    replicas: 1
+    resourceRequest:
+      enabled: false
+      memory: 10Mi
+      cpu: 10m
+    resourceLimit:
+      enabled: false
+      memory: 100Mi
+      cpu: 100m
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "sidekiq"]
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "sidekiq"]
+  whenever:
+    enabled: flase
+    replicas: 1
+    resourceRequest:
+      enabled: false
+      memory: 10Mi
+      cpu: 10m
+    resourceLimit:
+      enabled: false
+      memory: 100Mi
+      cpu: 100m
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "crond"]
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "crond"]
+
+
+
+
+

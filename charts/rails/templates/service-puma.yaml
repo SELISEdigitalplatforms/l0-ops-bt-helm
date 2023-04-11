@@ -1,0 +1,14 @@
+{{- if .Values.app.puma.service.enabled }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rails.fullname" . }}-{{ .Values.app.puma.name }}
+spec:
+  selector: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.puma.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.app.puma.service.port}}
+      targetPort: {{ .Values.app.puma.service.port}}
+  type: {{ .Values.app.puma.service.type}}
+{{- end }}

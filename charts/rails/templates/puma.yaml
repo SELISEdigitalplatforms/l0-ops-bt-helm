@@ -1,0 +1,131 @@
+{{- if .Values.app.puma.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+  namespace: {{ .Values.namespace }}
+  labels: {{ include "rails.labels" . | nindent 4 }}
+    name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+spec:
+  replicas: {{ .Values.app.puma.replicas }}
+  minReadySeconds: 2
+  selector:
+    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.puma.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+{{ include "rails.labels" . | indent 8 }}
+        name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ include "rails.fullname" . }}-puma
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["bundle", "exec"]
+          args: ["rails", "s",  "-p", "3000"]
+          ports:
+            - name: {{ include "rails.fullname" . }}-puma
+              containerPort: {{ .Values.app.puma.service.port}}
+              protocol: TCP
+          # For resources
+          {{- if or  .Values.app.puma.resourceRequest.enabled .Values.app.puma.resourceLimit.enabled }}
+          resources:
+            {{- if .Values.app.puma.resourceRequest.enabled }}
+            requests:
+              memory: "{{ .Values.app.puma.resourceRequest.memory }}"
+              cpu: "{{ .Values.app.puma.resourceRequest.cpu }}"
+            {{- end }}
+            {{- if .Values.app.puma.resourceLimit.enabled }}
+            limits:
+              memory: "{{ .Values.app.puma.resourceLimit.memory }}"
+              cpu: "{{ .Values.app.puma.resourceLimit.cpu }}"
+            {{- end }}
+          {{- end }}
+          # for livenessProbe
+          {{- if .Values.app.puma.livenessProbe.enabled }}
+          livenessProbe:
+            {{- if eq .Values.app.puma.livenessProbe.type "exec" }}
+            exec:
+              command: {{ .Values.app.puma.livenessProbe.command }}
+            {{- else if eq .Values.app.puma.livenessProbe.type "http" }}
+            httpGet:
+              path: {{ .Values.app.puma.livenessProbe.httpGet.path}}
+              port: {{ .Values.app.puma.livenessProbe.httpGet.port}}
+              httpHeaders:
+              {{- range .Values.app.puma.livenessProbe.httpGet.httpHeaders }}
+                - name: {{ .name }}
+                  value: {{ .value }}
+                            {{- end }}
+            {{- else if eq .Values.app.puma.livenessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .Values.app.puma.livenessProbe.port}}
+            {{ end }}
+          {{ end }}
+
+          {{- if .Values.app.puma.readinessProbe.enabled }}
+          readinessProbe:
+            {{- if eq .Values.app.puma.readinessProbe.type "exec" }}
+            exec:
+              command: {{ .Values.app.puma.readinessProbe.command }}
+            {{- else if eq .Values.app.puma.readinessProbe.type "http" }}
+            httpGet:
+              path: {{ .Values.app.puma.readinessProbe.httpGet.path}}
+              port: {{ .Values.app.puma.service.port }}
+              httpHeaders:
+              {{- range .Values.app.puma.readinessProbe.httpGet.httpHeaders }}
+                - name: {{ .name }}
+                  value: {{ .value }}
+              {{- end }}
+            {{- else if eq .Values.app.puma.readinessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .Values.app.puma.readinessProbe.port}}
+            {{ end }}
+          {{ end }}
+          volumeMounts:
+          {{- range .Values.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPoint }}
+          {{- end }}
+          envFrom:
+            {{- range .Values.extraConfigMaps }}
+            - configMapRef:
+                name: {{ . }}
+            {{- end }}
+            {{- range .Values.extraSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+            {{- if .Values.configMap.enabled }}
+            - configMapRef:
+                name: {{ include "rails.fullname" . }}
+            {{- end }}
+          env:
+          {{- range $key, $val := .Values.extraEnvs }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+      volumes:
+              {{- range .Values.volumeMounts }}
+        - name: {{ .name }}
+                {{- if eq .type "persistentVolumeClaim" }}
+          persistentVolumeClaim:
+            claimName: {{ .name }}
+                {{- else if eq .type "nfs" }}
+          nfs:
+            server: {{ .server }}
+            path: {{ .path }}
+                {{- else if eq .type "configMap" }}
+          configMap:
+            name: {{ .configName }}
+                {{- end }}
+              {{- end }}
+{{- end }}
