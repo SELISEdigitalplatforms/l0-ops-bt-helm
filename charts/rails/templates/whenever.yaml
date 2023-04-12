@@ -1,0 +1,136 @@
+{{- if .Values.app.whenever.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rails.fullname" .  }}-{{ .Values.app.whenever.name }}
+  namespace: {{ .Values.namespace }}
+  labels: {{ include "rails.labels" . | nindent 4 }}
+    name: {{ include "rails.fullname" .  }}-{{ .Values.app.whenever.name }}
+spec:
+  replicas: {{ .Values.app.whenever.replicas }}
+  minReadySeconds: 2
+  selector:
+    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.whenever.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+{{ include "rails.labels" . | indent 8 }}
+        name: {{ include "rails.fullname" .  }}-{{ .Values.app.whenever.name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ include "rails.fullname" . }}-whenever
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["crond", "-f"]
+          # For resources
+          {{- if or  .Values.app.whenever.resourceRequest.enabled .Values.app.whenever.resourceLimit.enabled }}
+          resources:
+            {{- if .Values.app.whenever.resourceRequest.enabled }}
+            requests:
+              memory: "{{ .Values.app.whenever.resourceRequest.memory }}"
+              cpu: "{{ .Values.app.whenever.resourceRequest.cpu }}"
+            {{- end }}
+            {{- if .Values.app.whenever.resourceLimit.enabled }}
+            limits:
+              memory: "{{ .Values.app.whenever.resourceLimit.memory }}"
+              cpu: "{{ .Values.app.whenever.resourceLimit.cpu }}"
+            {{- end }}
+          {{- end }}
+          # for livenessProbe
+          {{- if .Values.app.whenever.livenessProbe.enabled }}
+          livenessProbe:
+            {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
+            {{ $key }}: {{ $val | quote }}
+            {{- end }}
+            {{- if eq .Values.app.whenever.livenessProbe.type "exec" }}
+            exec:
+              command: {{ .Values.app.whenever.livenessProbe.command }}
+            {{- else if eq .Values.app.whenever.livenessProbe.type "http" }}
+            httpGet:
+              path: {{ .Values.app.whenever.livenessProbe.httpGet.path}}
+              port: {{ .Values.app.whenever.livenessProbe.httpGet.port}}
+              httpHeaders:
+              {{- range .Values.app.whenever.livenessProbe.httpGet.httpHeaders }}
+                - name: {{ .name }}
+                  value: {{ .value }}
+                            {{- end }}
+            {{- else if eq .Values.app.whenever.livenessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .Values.app.whenever.livenessProbe.port}}
+            {{ end }}
+          {{ end }}
+
+          {{- if .Values.app.whenever.readinessProbe.enabled }}
+          readinessProbe:
+            {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
+            {{ $key }}: {{ $val | quote }}
+            {{- end }}
+            {{- if eq .Values.app.whenever.readinessProbe.type "exec" }}
+            exec:
+              command: {{ .Values.app.whenever.readinessProbe.command }}
+            {{- else if eq .Values.app.whenever.readinessProbe.type "http" }}
+            httpGet:
+              path: {{ .Values.app.whenever.readinessProbe.httpGet.path}}
+              port: {{ .Values.app.whenever.service.port }}
+              httpHeaders:
+              {{- range .Values.app.whenever.readinessProbe.httpGet.httpHeaders }}
+                - name: {{ .name }}
+                  value: {{ .value }}
+              {{- end }}
+            {{- else if eq .Values.app.whenever.readinessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .Values.app.whenever.readinessProbe.port}}
+            {{ end }}
+          {{ end }}
+          volumeMounts:
+          {{- range .Values.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPoint }}
+          {{- end }}
+          envFrom:
+            {{- range .Values.extraConfigMaps }}
+            - configMapRef:
+                name: {{ . }}
+            {{- end }}
+            {{- range .Values.extraSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+            {{- if .Values.configMap.enabled }}
+            - configMapRef:
+                name: {{ include "rails.fullname" . }}
+            {{- end }}
+          env:
+          {{- range $key, $val := .Values.extraEnvs }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["bundle", "exec", "whenever", "--update-crontab"]
+      volumes:
+              {{- range .Values.volumeMounts }}
+        - name: {{ .name }}
+                {{- if eq .type "persistentVolumeClaim" }}
+          persistentVolumeClaim:
+            claimName: {{ .name }}
+                {{- else if eq .type "nfs" }}
+          nfs:
+            server: {{ .server }}
+            path: {{ .path }}
+                {{- else if eq .type "configMap" }}
+          configMap:
+            name: {{ .configName }}
+                {{- end }}
+              {{- end }}
+{{- end }}
