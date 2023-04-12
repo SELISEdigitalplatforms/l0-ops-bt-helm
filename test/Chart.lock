@@ -1,0 +1,6 @@
+dependencies:
+- name: rails
+  repository: https://selisebt.github.io/helm/
+  version: 0.0.1
+digest: sha256:e3746ada339080da2ae2b63b5b60d5a065222040706c76a0f324f4073cd678f3
+generated: "2023-04-12T02:05:24.279253+06:00"

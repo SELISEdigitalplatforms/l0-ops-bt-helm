@@ -1,6 +1,6 @@
 # Helm charts
 
-## 1. rails
+## [1. rails](https://selisebt.github.io/helm/charts/rails/)
 
 To use this chart
 

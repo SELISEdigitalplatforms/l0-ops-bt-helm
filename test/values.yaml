@@ -1,0 +1,4 @@
+rsp:
+  image:
+    repository: selisebt/migros-rsp
+    tag: test
