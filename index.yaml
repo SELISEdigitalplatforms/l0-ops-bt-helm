@@ -3,6 +3,19 @@ entries:
   rails:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2023-04-12T07:06:58.767398778Z"
+    description: A Helm chart for deploying A Rails Application
+    digest: a00bd725d567cd23a6268bbb1902949a14d9698b4bbd6e6926a1e307b1ec02b8
+    home: https://github.com/selisebt/helm
+    icon: https://selisegroup.com/wp-content/uploads/2022/10/logo.png
+    maintainers:
+    - name: Tek Nath Acharya
+    name: rails
+    urls:
+    - https://github.com/selisebt/helm/releases/download/rails-0.0.3/rails-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2023-04-12T06:09:33.232983226Z"
     description: A Helm chart for deploying A Rails Application
     digest: e3fb43a4fe4c62f3c1d0ae558d6a6089a86832be827d05dbc558191ee34c9dcb
@@ -27,4 +40,4 @@ entries:
     urls:
     - https://github.com/selisebt/helm/releases/download/rails-0.0.1/rails-0.0.1.tgz
     version: 0.0.1
-generated: "2023-04-12T06:09:33.233483834Z"
+generated: "2023-04-12T07:06:58.767414478Z"
