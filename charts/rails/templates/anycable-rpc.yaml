@@ -1,16 +1,16 @@
-{{- if .Values.app.puma.enabled }}
+{{- if .Values.app.acrpc.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+  name: {{ include "rails.fullname" .  }}-{{ .Values.app.acrpc.name }}
   namespace: {{ .Values.namespace }}
   labels: {{ include "rails.labels" . | nindent 4 }}
-    name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+    name: {{ include "rails.fullname" .  }}-{{ .Values.app.acrpc.name }}
 spec:
-  replicas: {{ .Values.app.puma.replicas }}
+  replicas: {{ .Values.app.acrpc.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.puma.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.acrpc.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,80 +20,80 @@ spec:
     metadata:
       labels:
 {{ include "rails.labels" . | indent 8 }}
-        name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+        name: {{ include "rails.fullname" .  }}-{{ .Values.app.acrpc.name }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-        - name: {{ include "rails.fullname" . }}-puma
+        - name: {{ include "rails.fullname" . }}-acrpc
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["bundle", "exec"]
-          args: ["rails", "s",  "-p", "3000"]
+          args: ["anycable", "--rpc-host=0.0.0.0:{{ .Values.app.acrpc.service.port }}"]
           ports:
-            - name: {{ include "rails.fullname" . }}-puma
-              containerPort: {{ .Values.app.puma.service.port}}
+            - name: {{ include "rails.fullname" . }}-acrpc
+              containerPort: {{ .Values.app.acrpc.service.port}}
               protocol: TCP
           # For resources
-          {{- if or  .Values.app.puma.resourceRequest.enabled .Values.app.puma.resourceLimit.enabled }}
+          {{- if or  .Values.app.acrpc.resourceRequest.enabled .Values.app.acrpc.resourceLimit.enabled }}
           resources:
-            {{- if .Values.app.puma.resourceRequest.enabled }}
+            {{- if .Values.app.acrpc.resourceRequest.enabled }}
             requests:
-              memory: "{{ .Values.app.puma.resourceRequest.memory }}"
-              cpu: "{{ .Values.app.puma.resourceRequest.cpu }}"
+              memory: "{{ .Values.app.acrpc.resourceRequest.memory }}"
+              cpu: "{{ .Values.app.acrpc.resourceRequest.cpu }}"
             {{- end }}
-            {{- if .Values.app.puma.resourceLimit.enabled }}
+            {{- if .Values.app.acrpc.resourceLimit.enabled }}
             limits:
-              memory: "{{ .Values.app.puma.resourceLimit.memory }}"
-              cpu: "{{ .Values.app.puma.resourceLimit.cpu }}"
+              memory: "{{ .Values.app.acrpc.resourceLimit.memory }}"
+              cpu: "{{ .Values.app.acrpc.resourceLimit.cpu }}"
             {{- end }}
           {{- end }}
           # for livenessProbe
-          {{- if .Values.app.puma.livenessProbe.enabled }}
+          {{- if .Values.app.acrpc.livenessProbe.enabled }}
           livenessProbe:
-            {{- range $key, $val := .Values.app.puma.livenessProbe.timings }}
+            {{- range $key, $val := .Values.app.acrpc.livenessProbe.timings }}
             {{ $key }}: {{ $val | quote }}
             {{- end }}
-            {{- if eq .Values.app.puma.livenessProbe.type "exec" }}
+            {{- if eq .Values.app.acrpc.livenessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.puma.livenessProbe.command }}
-            {{- else if eq .Values.app.puma.livenessProbe.type "http" }}
+              command: {{ .Values.app.acrpc.livenessProbe.command }}
+            {{- else if eq .Values.app.acrpc.livenessProbe.type "http" }}
             httpGet:
-              path: {{ .Values.app.puma.livenessProbe.httpGet.path}}
-              port: {{ .Values.app.puma.livenessProbe.httpGet.port}}
+              path: {{ .Values.app.acrpc.livenessProbe.httpGet.path}}
+              port: {{ .Values.app.acrpc.livenessProbe.httpGet.port}}
               httpHeaders:
-              {{- range .Values.app.puma.livenessProbe.httpGet.httpHeaders }}
+              {{- range .Values.app.acrpc.livenessProbe.httpGet.httpHeaders }}
                 - name: {{ .name }}
                   value: {{ .value }}
                             {{- end }}
-            {{- else if eq .Values.app.puma.livenessProbe.type "tcp" }}
+            {{- else if eq .Values.app.acrpc.livenessProbe.type "tcp" }}
             tcpSocket:
-              port: {{ .Values.app.puma.livenessProbe.port}}
+              port: {{ .Values.app.acrpc.livenessProbe.port}}
             {{ end }}
           {{ end }}
 
-          {{- if .Values.app.puma.readinessProbe.enabled }}
+          {{- if .Values.app.acrpc.readinessProbe.enabled }}
           readinessProbe:
-            {{- range $key, $val := .Values.app.puma.readinessProbe.timings }}
+            {{- range $key, $val := .Values.app.acrpc.readinessProbe.timings }}
             {{ $key }}: {{ $val | quote }}
             {{- end }}
-            {{- if eq .Values.app.puma.readinessProbe.type "exec" }}
+            {{- if eq .Values.app.acrpc.readinessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.puma.readinessProbe.command }}
-            {{- else if eq .Values.app.puma.readinessProbe.type "http" }}
+              command: {{ .Values.app.acrpc.readinessProbe.command }}
+            {{- else if eq .Values.app.acrpc.readinessProbe.type "http" }}
             httpGet:
-              path: {{ .Values.app.puma.readinessProbe.httpGet.path}}
-              port: {{ .Values.app.puma.service.port }}
+              path: {{ .Values.app.acrpc.readinessProbe.httpGet.path}}
+              port: {{ .Values.app.acrpc.service.port }}
               httpHeaders:
-              {{- range .Values.app.puma.readinessProbe.httpGet.httpHeaders }}
+              {{- range .Values.app.acrpc.readinessProbe.httpGet.httpHeaders }}
                 - name: {{ .name }}
                   value: {{ .value }}
               {{- end }}
-            {{- else if eq .Values.app.puma.readinessProbe.type "tcp" }}
+            {{- else if eq .Values.app.acrpc.readinessProbe.type "tcp" }}
             tcpSocket:
-              port: {{ .Values.app.puma.readinessProbe.port}}
+              port: {{ .Values.app.acrpc.readinessProbe.port}}
             {{ end }}
           {{ end }}
           volumeMounts:

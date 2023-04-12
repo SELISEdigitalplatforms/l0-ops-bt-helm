@@ -78,11 +78,12 @@ app:
     # Ths supports liveness using exec or http or tcp methods
     # Check examples below
     livenessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
       # enable or disable livenessProbe
       enabled: false
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       # type: exec Example
 #      type: exec
 #      command: ["pgrep", "-f", "sneakers"]
@@ -104,12 +105,14 @@ app:
     # Check actual doc for more information
     # For examples refer livenessProbe above
     readinessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       enabled: false
       # For examples check livenessProbe examples
   sneakers:
+    name: sneakers
     enabled: false
     replicas: 1
     resourceRequest:
@@ -121,46 +124,24 @@ app:
       memory: 100Mi
       cpu: 100m
     livenessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
       enabled: false
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       type: exec
       command: ["pgrep", "-f", "sneakers"]
     readinessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
       enabled: false
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       type: exec
       command: ["pgrep", "-f", "sneakers"]
-  sidekiq:
-    enabled: flase
-    replicas: 1
-    resourceRequest:
-      enabled: false
-      memory: 10Mi
-      cpu: 10m
-    resourceLimit:
-      enabled: false
-      memory: 100Mi
-      cpu: 100m
-    livenessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
-      enabled: false
-      type: exec
-      command: ["pgrep", "-f", "sidekiq"]
-    readinessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
-      enabled: false
-      type: exec
-      command: ["pgrep", "-f", "sidekiq"]
   whenever:
-    enabled: flase
+    enabled: false
+    name: whenever
     replicas: 1
     resourceRequest:
       enabled: false
@@ -171,21 +152,51 @@ app:
       memory: 100Mi
       cpu: 100m
     livenessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       enabled: false
       type: exec
       command: ["pgrep", "-f", "crond"]
     readinessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       enabled: false
       type: exec
       command: ["pgrep", "-f", "crond"]
-
-
-
-
-
+  acrpc:
+    enabled: false
+    name: acrpc
+    replicas: 1
+    # Any cable RPC service configuration
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 3001
+    resourceRequest:
+      enabled: false
+      memory: 10Mi
+      cpu: 10m
+    resourceLimit:
+      enabled: false
+      memory: 100Mi
+      cpu: 100m
+    livenessProbe:
+      timings:
+        initialDelaySeconds: 4
+        periodSeconds: 15
+        failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "anycable"]
+    readinessProbe:
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
+      enabled: false
+      type: exec
+      command: ["pgrep", "-f", "anycable"]

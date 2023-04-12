@@ -1,6 +1,6 @@
 apiVersion: v2
 name: rails
-version: 0.0.1
+version: 0.0.4
 appVersion: "1.0.0"
 description: A Helm chart for deploying A Rails Application
 icon: https://selisegroup.com/wp-content/uploads/2022/10/logo.png

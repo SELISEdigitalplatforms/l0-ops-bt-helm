@@ -1,9 +1,10 @@
-{{- if .Values.app.puma.service.enabled }}
+{{- if and .Values.app.puma.enabled  .Values.app.puma.service.enabled }}
 
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "rails.fullname" . }}-{{ .Values.app.puma.name }}
+  namespace: {{ .Values.namespace}}
 spec:
   selector: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.puma.name }}
   ports:

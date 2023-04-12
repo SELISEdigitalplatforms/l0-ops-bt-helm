@@ -1,16 +1,16 @@
-{{- if .Values.app.puma.enabled }}
+{{- if .Values.app.whenever.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+  name: {{ include "rails.fullname" .  }}-{{ .Values.app.whenever.name }}
   namespace: {{ .Values.namespace }}
   labels: {{ include "rails.labels" . | nindent 4 }}
-    name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+    name: {{ include "rails.fullname" .  }}-{{ .Values.app.whenever.name }}
 spec:
-  replicas: {{ .Values.app.puma.replicas }}
+  replicas: {{ .Values.app.whenever.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.puma.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.whenever.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,80 +20,75 @@ spec:
     metadata:
       labels:
 {{ include "rails.labels" . | indent 8 }}
-        name: {{ include "rails.fullname" .  }}-{{ .Values.app.puma.name }}
+        name: {{ include "rails.fullname" .  }}-{{ .Values.app.whenever.name }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-        - name: {{ include "rails.fullname" . }}-puma
+        - name: {{ include "rails.fullname" . }}-whenever
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["bundle", "exec"]
-          args: ["rails", "s",  "-p", "3000"]
-          ports:
-            - name: {{ include "rails.fullname" . }}-puma
-              containerPort: {{ .Values.app.puma.service.port}}
-              protocol: TCP
+          args: ["crond", "-f"]
           # For resources
-          {{- if or  .Values.app.puma.resourceRequest.enabled .Values.app.puma.resourceLimit.enabled }}
+          {{- if or  .Values.app.whenever.resourceRequest.enabled .Values.app.whenever.resourceLimit.enabled }}
           resources:
-            {{- if .Values.app.puma.resourceRequest.enabled }}
+            {{- if .Values.app.whenever.resourceRequest.enabled }}
             requests:
-              memory: "{{ .Values.app.puma.resourceRequest.memory }}"
-              cpu: "{{ .Values.app.puma.resourceRequest.cpu }}"
+              memory: "{{ .Values.app.whenever.resourceRequest.memory }}"
+              cpu: "{{ .Values.app.whenever.resourceRequest.cpu }}"
             {{- end }}
-            {{- if .Values.app.puma.resourceLimit.enabled }}
+            {{- if .Values.app.whenever.resourceLimit.enabled }}
             limits:
-              memory: "{{ .Values.app.puma.resourceLimit.memory }}"
-              cpu: "{{ .Values.app.puma.resourceLimit.cpu }}"
+              memory: "{{ .Values.app.whenever.resourceLimit.memory }}"
+              cpu: "{{ .Values.app.whenever.resourceLimit.cpu }}"
             {{- end }}
           {{- end }}
           # for livenessProbe
-          {{- if .Values.app.puma.livenessProbe.enabled }}
+          {{- if .Values.app.whenever.livenessProbe.enabled }}
           livenessProbe:
-            {{- range $key, $val := .Values.app.puma.livenessProbe.timings }}
+            {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
             {{ $key }}: {{ $val | quote }}
             {{- end }}
-            {{- if eq .Values.app.puma.livenessProbe.type "exec" }}
+            {{- if eq .Values.app.whenever.livenessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.puma.livenessProbe.command }}
-            {{- else if eq .Values.app.puma.livenessProbe.type "http" }}
+              command: {{ .Values.app.whenever.livenessProbe.command }}
+            {{- else if eq .Values.app.whenever.livenessProbe.type "http" }}
             httpGet:
-              path: {{ .Values.app.puma.livenessProbe.httpGet.path}}
-              port: {{ .Values.app.puma.livenessProbe.httpGet.port}}
+              path: {{ .Values.app.whenever.livenessProbe.httpGet.path}}
+              port: {{ .Values.app.whenever.livenessProbe.httpGet.port}}
               httpHeaders:
-              {{- range .Values.app.puma.livenessProbe.httpGet.httpHeaders }}
+              {{- range .Values.app.whenever.livenessProbe.httpGet.httpHeaders }}
                 - name: {{ .name }}
                   value: {{ .value }}
                             {{- end }}
-            {{- else if eq .Values.app.puma.livenessProbe.type "tcp" }}
+            {{- else if eq .Values.app.whenever.livenessProbe.type "tcp" }}
             tcpSocket:
-              port: {{ .Values.app.puma.livenessProbe.port}}
+              port: {{ .Values.app.whenever.livenessProbe.port}}
             {{ end }}
           {{ end }}
 
-          {{- if .Values.app.puma.readinessProbe.enabled }}
+          {{- if .Values.app.whenever.readinessProbe.enabled }}
           readinessProbe:
-            {{- range $key, $val := .Values.app.puma.readinessProbe.timings }}
+            {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
             {{ $key }}: {{ $val | quote }}
             {{- end }}
-            {{- if eq .Values.app.puma.readinessProbe.type "exec" }}
+            {{- if eq .Values.app.whenever.readinessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.puma.readinessProbe.command }}
-            {{- else if eq .Values.app.puma.readinessProbe.type "http" }}
+              command: {{ .Values.app.whenever.readinessProbe.command }}
+            {{- else if eq .Values.app.whenever.readinessProbe.type "http" }}
             httpGet:
-              path: {{ .Values.app.puma.readinessProbe.httpGet.path}}
-              port: {{ .Values.app.puma.service.port }}
+              path: {{ .Values.app.whenever.readinessProbe.httpGet.path}}
+              port: {{ .Values.app.whenever.service.port }}
               httpHeaders:
-              {{- range .Values.app.puma.readinessProbe.httpGet.httpHeaders }}
+              {{- range .Values.app.whenever.readinessProbe.httpGet.httpHeaders }}
                 - name: {{ .name }}
                   value: {{ .value }}
               {{- end }}
-            {{- else if eq .Values.app.puma.readinessProbe.type "tcp" }}
+            {{- else if eq .Values.app.whenever.readinessProbe.type "tcp" }}
             tcpSocket:
-              port: {{ .Values.app.puma.readinessProbe.port}}
+              port: {{ .Values.app.whenever.readinessProbe.port}}
             {{ end }}
           {{ end }}
           volumeMounts:
@@ -119,6 +114,10 @@ spec:
             - name: {{ $key }}
               value: {{ $val | quote }}
           {{- end }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["bundle", "exec", "whenever", "--update-crontab"]
       volumes:
               {{- range .Values.volumeMounts }}
         - name: {{ .name }}
