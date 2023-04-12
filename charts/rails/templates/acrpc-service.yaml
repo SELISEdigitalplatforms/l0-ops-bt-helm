@@ -1,0 +1,13 @@
+{{- if and .Values.app.acrpc.service.enabled .Values.app.acrpc.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rails.fullname" . }}-{{ .Values.app.acrpc.name }}
+spec:
+  selector: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.acrpc.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.app.acrpc.service.port}}
+      targetPort: {{ .Values.app.acrpc.service.port}}
+  type: {{ .Values.app.acrpc.service.type}}
+{{- end }}
