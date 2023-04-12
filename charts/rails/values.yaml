@@ -78,11 +78,12 @@ app:
     # Ths supports liveness using exec or http or tcp methods
     # Check examples below
     livenessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
       # enable or disable livenessProbe
       enabled: false
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       # type: exec Example
 #      type: exec
 #      command: ["pgrep", "-f", "sneakers"]
@@ -104,9 +105,10 @@ app:
     # Check actual doc for more information
     # For examples refer livenessProbe above
     readinessProbe:
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      failureThreshold: 3
+      timings:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       enabled: false
       # For examples check livenessProbe examples
   sneakers:

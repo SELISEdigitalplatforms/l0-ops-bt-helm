@@ -53,6 +53,9 @@ spec:
           # for livenessProbe
           {{- if .Values.app.puma.livenessProbe.enabled }}
           livenessProbe:
+            {{- range $key, $val := .Values.app.puma.livenessProbe.timings }}
+            {{ $key }}: {{ $val | quote }}
+            {{- end }}
             {{- if eq .Values.app.puma.livenessProbe.type "exec" }}
             exec:
               command: {{ .Values.app.puma.livenessProbe.command }}
@@ -73,6 +76,9 @@ spec:
 
           {{- if .Values.app.puma.readinessProbe.enabled }}
           readinessProbe:
+            {{- range $key, $val := .Values.app.puma.readinessProbe.timings }}
+            {{ $key }}: {{ $val | quote }}
+            {{- end }}
             {{- if eq .Values.app.puma.readinessProbe.type "exec" }}
             exec:
               command: {{ .Values.app.puma.readinessProbe.command }}
