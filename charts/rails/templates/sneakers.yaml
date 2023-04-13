@@ -10,7 +10,7 @@ spec:
   replicas: {{ .Values.app.sneakers.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.sneakers.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 6 }}-{{ .Values.app.sneakers.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
