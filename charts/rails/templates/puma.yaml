@@ -10,7 +10,7 @@ spec:
   replicas: {{ .Values.app.puma.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.puma.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 6 }}-{{ .Values.app.puma.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
