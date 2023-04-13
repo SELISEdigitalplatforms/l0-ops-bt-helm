@@ -33,8 +33,7 @@ spec:
           command: ["bundle", "exec"]
           args: ["anycable", "--rpc-host=0.0.0.0:{{ .Values.app.acrpc.service.port }}"]
           ports:
-            - name: {{ include "rails.fullname" . }}-acrpc
-              containerPort: {{ .Values.app.acrpc.service.port}}
+            - containerPort: {{ .Values.app.acrpc.service.port}}
               protocol: TCP
           # For resources
           {{- if or  .Values.app.acrpc.resourceRequest.enabled .Values.app.acrpc.resourceLimit.enabled }}
