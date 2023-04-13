@@ -49,7 +49,7 @@ spec:
           {{- if .Values.app.whenever.livenessProbe.enabled }}
           livenessProbe:
             {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.whenever.livenessProbe.type "exec" }}
             exec:
@@ -72,7 +72,7 @@ spec:
           {{- if .Values.app.whenever.readinessProbe.enabled }}
           readinessProbe:
             {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.whenever.readinessProbe.type "exec" }}
             exec:

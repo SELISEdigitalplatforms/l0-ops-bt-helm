@@ -50,7 +50,7 @@ spec:
           {{- if .Values.app.sneakers.livenessProbe.enabled }}
           livenessProbe:
             {{- range $key, $val := .Values.app.sneakers.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.sneakers.livenessProbe.type "exec" }}
             exec:
@@ -73,7 +73,7 @@ spec:
           {{- if .Values.app.sneakers.readinessProbe.enabled }}
           readinessProbe:
             {{- range $key, $val := .Values.app.sneakers.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.sneakers.readinessProbe.type "exec" }}
             exec:
