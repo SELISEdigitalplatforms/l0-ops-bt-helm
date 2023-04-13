@@ -33,8 +33,7 @@ spec:
           command: ["bundle", "exec"]
           args: ["rails", "s",  "-p", "3000"]
           ports:
-            - name: {{ include "rails.fullname" . }}-puma
-              containerPort: {{ .Values.app.puma.service.port}}
+            - containerPort: {{ .Values.app.puma.service.port}}
               protocol: TCP
           # For resources
           {{- if or  .Values.app.puma.resourceRequest.enabled .Values.app.puma.resourceLimit.enabled }}
