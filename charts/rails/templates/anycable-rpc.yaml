@@ -54,7 +54,7 @@ spec:
           {{- if .Values.app.acrpc.livenessProbe.enabled }}
           livenessProbe:
             {{- range $key, $val := .Values.app.acrpc.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.acrpc.livenessProbe.type "exec" }}
             exec:
@@ -77,7 +77,7 @@ spec:
           {{- if .Values.app.acrpc.readinessProbe.enabled }}
           readinessProbe:
             {{- range $key, $val := .Values.app.acrpc.readinessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.acrpc.readinessProbe.type "exec" }}
             exec:
