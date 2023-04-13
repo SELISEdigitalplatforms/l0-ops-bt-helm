@@ -10,7 +10,7 @@ spec:
   replicas: {{ .Values.app.acrpc.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.acrpc.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 6 }}-{{ .Values.app.acrpc.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
