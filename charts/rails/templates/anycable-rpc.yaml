@@ -57,7 +57,7 @@ spec:
             {{- end }}
             {{- if eq .Values.app.acrpc.livenessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.acrpc.livenessProbe.command }}
+              command: {{ toYaml .Values.app.acrpc.livenessProbe.command | nindent 16 }}
             {{- else if eq .Values.app.acrpc.livenessProbe.type "http" }}
             httpGet:
               path: {{ .Values.app.acrpc.livenessProbe.httpGet.path}}
@@ -80,7 +80,7 @@ spec:
             {{- end }}
             {{- if eq .Values.app.acrpc.readinessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.acrpc.readinessProbe.command }}
+              command: {{ toYaml .Values.app.acrpc.livenessProbe.command | nindent 16 }}
             {{- else if eq .Values.app.acrpc.readinessProbe.type "http" }}
             httpGet:
               path: {{ .Values.app.acrpc.readinessProbe.httpGet.path}}
