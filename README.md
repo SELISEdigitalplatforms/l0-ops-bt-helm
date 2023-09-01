@@ -15,7 +15,7 @@ helm repo add rails https://h.i.selise.tech/l0-ops-bt-helm/
  helm search repo rails
 ```
 
-3. Install or dry-run as
+3. Install or dry-run as follows
 
 ```shell
 helm install test rails --repo [https://h.i.selise.tech/l0-ops-bt-helm/](https:///h.i.selise.tech/l0-ops-bt-helm/) --dry-run
