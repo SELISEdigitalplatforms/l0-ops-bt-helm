@@ -10,7 +10,7 @@ spec:
   replicas: {{ .Values.app.whenever.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.whenever.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 6 }}-{{ .Values.app.whenever.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -49,11 +49,11 @@ spec:
           {{- if .Values.app.whenever.livenessProbe.enabled }}
           livenessProbe:
             {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.whenever.livenessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.whenever.livenessProbe.command }}
+              command: {{ toYaml .Values.app.whenever.livenessProbe.command | nindent 16 }}
             {{- else if eq .Values.app.whenever.livenessProbe.type "http" }}
             httpGet:
               path: {{ .Values.app.whenever.livenessProbe.httpGet.path}}
@@ -72,11 +72,11 @@ spec:
           {{- if .Values.app.whenever.readinessProbe.enabled }}
           readinessProbe:
             {{- range $key, $val := .Values.app.whenever.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.whenever.readinessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.whenever.readinessProbe.command }}
+              command: {{ toYaml .Values.app.whenever.readinessProbe.command | nindent 16 }}
             {{- else if eq .Values.app.whenever.readinessProbe.type "http" }}
             httpGet:
               path: {{ .Values.app.whenever.readinessProbe.httpGet.path}}

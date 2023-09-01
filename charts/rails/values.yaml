@@ -124,21 +124,27 @@ app:
       memory: 100Mi
       cpu: 100m
     livenessProbe:
-      enabled: false
+      enabled: true
       timings:
         initialDelaySeconds: 5
         periodSeconds: 10
         failureThreshold: 3
       type: exec
-      command: ["pgrep", "-f", "sneakers"]
+      command:
+        - pgrep
+        - -f
+        - sneakers
     readinessProbe:
-      enabled: false
+      enabled: true
       timings:
         initialDelaySeconds: 5
         periodSeconds: 10
         failureThreshold: 3
       type: exec
-      command: ["pgrep", "-f", "sneakers"]
+      command:
+        - pgrep
+        - -f
+        - sneakers
   whenever:
     enabled: false
     name: whenever
@@ -156,17 +162,23 @@ app:
         initialDelaySeconds: 5
         periodSeconds: 10
         failureThreshold: 3
-      enabled: false
+      enabled: true
       type: exec
-      command: ["pgrep", "-f", "crond"]
+      command:
+      - pgrep
+      - -f
+      - crond
     readinessProbe:
       timings:
         initialDelaySeconds: 5
         periodSeconds: 10
         failureThreshold: 3
-      enabled: false
+      enabled: true
       type: exec
-      command: ["pgrep", "-f", "crond"]
+      command:
+        - pgrep
+        - -f
+        - crond
   acrpc:
     enabled: false
     name: acrpc
@@ -189,14 +201,20 @@ app:
         initialDelaySeconds: 4
         periodSeconds: 15
         failureThreshold: 3
-      enabled: false
+      enabled: true
       type: exec
-      command: ["pgrep", "-f", "anycable"]
+      command:
+        - pgrep
+        - -f
+        - anycable
     readinessProbe:
       timings:
         initialDelaySeconds: 5
         periodSeconds: 10
         failureThreshold: 3
-      enabled: false
+      enabled: true
       type: exec
-      command: ["pgrep", "-f", "anycable"]
+      command:
+        - pgrep
+        - -f
+        - anycable

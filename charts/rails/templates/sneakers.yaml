@@ -10,7 +10,7 @@ spec:
   replicas: {{ .Values.app.sneakers.replicas }}
   minReadySeconds: 2
   selector:
-    matchLabels: {{ include "rails.selector.labels" . | nindent 4 }}-{{ .Values.app.sneakers.name }}
+    matchLabels: {{ include "rails.selector.labels" . | nindent 6 }}-{{ .Values.app.sneakers.name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -50,11 +50,11 @@ spec:
           {{- if .Values.app.sneakers.livenessProbe.enabled }}
           livenessProbe:
             {{- range $key, $val := .Values.app.sneakers.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.sneakers.livenessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.sneakers.livenessProbe.command }}
+              command: {{ toYaml .Values.app.sneakers.livenessProbe.command | nindent 16 }}
             {{- else if eq .Values.app.sneakers.livenessProbe.type "http" }}
             httpGet:
               path: {{ .Values.app.sneakers.livenessProbe.httpGet.path}}
@@ -73,11 +73,11 @@ spec:
           {{- if .Values.app.sneakers.readinessProbe.enabled }}
           readinessProbe:
             {{- range $key, $val := .Values.app.sneakers.livenessProbe.timings }}
-            {{ $key }}: {{ $val | quote }}
+            {{ $key }}: {{ $val }}
             {{- end }}
             {{- if eq .Values.app.sneakers.readinessProbe.type "exec" }}
             exec:
-              command: {{ .Values.app.sneakers.readinessProbe.command }}
+              command: {{ toYaml .Values.app.sneakers.livenessProbe.command | nindent 16 }}
             {{- else if eq .Values.app.sneakers.readinessProbe.type "http" }}
             httpGet:
               path: {{ .Values.app.sneakers.readinessProbe.httpGet.path}}
